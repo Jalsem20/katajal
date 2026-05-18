@@ -1,4 +1,3 @@
-// High-Quality Balanced Quote Repositories
 const database = {
     ms: {
         tagline: "kata-kata bermakna",
@@ -35,29 +34,31 @@ const database = {
 let currentLanguage = 'ms';
 let lastQuoteIndex = -1;
 let toastTimeout = null;
+let typingInterval = null;
 
-// Core Language Switch Interface Controller
 function toggleLanguage() {
     currentLanguage = (currentLanguage === 'ms') ? 'en' : 'ms';
     
-    // Adjust Active Navigation Status Indicators
     document.getElementById('btnMs').classList.toggle('active', currentLanguage === 'ms');
     document.getElementById('btnEn').classList.toggle('active', currentLanguage === 'en');
     
-    // Synchronize Fixed Copy Labels
     document.getElementById('brandTagline').innerText = database[currentLanguage].tagline;
     document.getElementById('nextBtnLabel').innerText = database[currentLanguage].nextLabel;
     document.getElementById('copyBtnLabel').innerText = database[currentLanguage].copyLabel;
     document.querySelector('footer').innerHTML = database[currentLanguage].copyright;
 
-    // Reset matching history matrix states for clean seeding
     lastQuoteIndex = -1;
     generateRandomQuote();
 }
 
-// Optimized Anti-Repetitive Randomizer Engine
+// ── Real-Time Pencil Writing Engine ──
 function generateRandomQuote() {
-    const targetArea = document.getElementById('quoteArea');
+    // Clear any typing loop currently running to avoid text overlap glitches
+    clearInterval(typingInterval);
+
+    const textElement = document.getElementById('quoteText');
+    const authorElement = document.getElementById('quoteAuthor');
+    const pencilElement = document.getElementById('pencilCursor');
     const collection = database[currentLanguage].quotes;
     
     if (collection.length <= 1) return;
@@ -69,26 +70,40 @@ function generateRandomQuote() {
 
     lastQuoteIndex = nextIndex;
     const targetQuote = collection[nextIndex];
+    
+    const fullText = targetQuote.text;
+    let currentIdx = 0;
 
-    // Trigger Section 6 Easing Motion Transitions
-    targetArea.classList.add('is-switching');
+    // Reset layout states before typing starts
+    textElement.innerText = "";
+    authorElement.innerText = `— ${targetQuote.author}`;
+    authorElement.classList.remove('visible');
+    
+    // Unhide pencil and activate dynamic vibration CSS styles
+    pencilElement.classList.add('writing');
 
-    setTimeout(() => {
-        document.getElementById('quoteText').innerText = targetQuote.text;
-        document.getElementById('quoteAuthor').innerText = `— ${targetQuote.author}`;
-        targetArea.classList.remove('is-switching');
-        
-        // Clear active copy success states gracefully if moving onward
-        resetCopyButtonState();
-    }, 150);
+    // Run writing loop calculations
+    typingInterval = setInterval(() => {
+        if (currentIdx < fullText.length) {
+            textElement.innerText += fullText.charAt(currentIdx);
+            currentIdx++;
+        } else {
+            // Typing complete: shut down loop engine
+            clearInterval(typingInterval);
+            pencilElement.classList.remove('writing');
+            
+            // Bring author signature up cleanly
+            authorElement.classList.add('visible');
+            resetCopyButtonState();
+        }
+    }, 45); // Adjust writing speed delivery here (lower numbers mean faster writing)
 }
 
-// Global Secure Mobile-Fallback Clipboard Controller Engine
 function copyToClipboard() {
     const textToCopy = document.getElementById('quoteText').innerText;
-    const fullOutput = `${textToCopy}`;
+    const authorToCopy = document.getElementById('quoteAuthor').innerText;
+    const fullOutput = `${textToCopy} ${authorToCopy}`;
 
-    // Target fallback engines if platform environment is inside restricted WebViews
     if (!navigator.clipboard) {
         fallbackCopyToClipboard(fullOutput);
         return;
@@ -102,16 +117,13 @@ function copyToClipboard() {
     });
 }
 
-// Legacy Textarea Sandbox Generator for Mobile App Browsers
 function fallbackCopyToClipboard(text) {
     const textArea = document.createElement("textarea");
     textArea.value = text;
-    
     textArea.style.position = "fixed";
     textArea.style.top = "0";
     textArea.style.left = "0";
     textArea.style.opacity = "0";
-    
     document.body.appendChild(textArea);
     textArea.focus();
     textArea.select();
@@ -121,13 +133,11 @@ function fallbackCopyToClipboard(text) {
         triggerToastAlert();
         triggerCopyButtonSuccess();
     } catch (err) {
-        console.error('Fallback copy engine catastrophic execution failure: ', err);
+        console.error('Fallback layout execution break: ', err);
     }
-
     document.body.removeChild(textArea);
 }
 
-// Animation State UI Helper Functions
 function triggerToastAlert() {
     const toast = document.getElementById('toastNotice');
     toast.innerText = database[currentLanguage].toastLabel;
@@ -144,7 +154,6 @@ function triggerToastAlert() {
 function triggerCopyButtonSuccess() {
     const copyBtn = document.getElementById('copyBtn');
     const copyLabel = document.getElementById('copyBtnLabel');
-    
     if (copyBtn) copyBtn.classList.add('success-state');
     if (copyLabel) copyLabel.innerText = database[currentLanguage].copiedLabel;
 }
@@ -152,12 +161,10 @@ function triggerCopyButtonSuccess() {
 function resetCopyButtonState() {
     const copyBtn = document.getElementById('copyBtn');
     const copyLabel = document.getElementById('copyBtnLabel');
-    
     if (copyBtn) copyBtn.classList.remove('success-state');
     if (copyLabel) copyLabel.innerText = database[currentLanguage].copyLabel;
 }
 
-// Initialize First Application State Run Setup
 window.addEventListener('DOMContentLoaded', () => {
     generateRandomQuote();
 });
