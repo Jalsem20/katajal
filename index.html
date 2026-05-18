@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="kataJal — kata-kata bermakna dalam dua bahasa. Meaningful quotes in two languages." />
+  <title>kataJal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ── CSS Variables ─────────────────────────────── */
+    :root {
+      --bg:        #f5f0e8;
+      --surface:   #fffdf8;
+      --ink:       #1a1612;
+      --ink-muted: #7a6e62;
+      --accent:    #c0392b;
+      --accent-dk: #96291f;
+      --border:    #e0d8cc;
+      --shadow:    rgba(26,22,18,.08);
+      --radius:    18px;
+      --ease:      cubic-bezier(.4,0,.2,1);
+      --font-disp: 'DM Serif Display', Georgia, serif;
+      --font-body: 'DM Sans', system-ui, sans-serif;
+    }
+
+    /* ── Reset ─────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      min-height: 100svh;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--font-body);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem 1rem 2.5rem;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* ── Decorative background grain ──────────────── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        radial-gradient(ellipse 80% 60% at 20% 10%, rgba(192,57,43,.07) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% 90%, rgba(192,57,43,.05) 0%, transparent 55%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Page wrapper ──────────────────────────────── */
+    .wrapper {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 680px;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    /* ── Header ────────────────────────────────────── */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 .25rem;
+    }
+
+    .logo {
+      display: flex;
+      flex-direction: column;
+      line-height: 1;
+    }
+
+    .logo-kata {
+      font-family: var(--font-disp);
+      font-size: clamp(2rem, 6vw, 2.8rem);
+      letter-spacing: -.03em;
+      color: var(--ink);
+    }
+
+    .logo-jal {
+      font-family: var(--font-disp);
+      font-style: italic;
+      font-size: clamp(2rem, 6vw, 2.8rem);
+      letter-spacing: -.03em;
+      color: var(--accent);
+      margin-top: -.15em;
+    }
+
+    .logo-tagline {
+      font-size: .72rem;
+      font-weight: 300;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--ink-muted);
+      margin-top: .35rem;
+    }
+
+    /* ── Language toggle ───────────────────────────── */
+    .lang-toggle {
+      display: flex;
+      align-items: center;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 99px;
+      padding: .25rem;
+      gap: .2rem;
+      box-shadow: 0 2px 8px var(--shadow);
+    }
+
+    .lang-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: var(--font-body);
+      font-size: .78rem;
+      font-weight: 500;
+      letter-spacing: .06em;
+      padding: .38rem .85rem;
+      border-radius: 99px;
+      color: var(--ink-muted);
+      transition: background .2s var(--ease), color .2s var(--ease);
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .lang-btn.active {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    /* ── Quote card ────────────────────────────────── */
+    .card {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: clamp(2rem, 6vw, 3rem) clamp(1.75rem, 6vw, 2.75rem);
+      box-shadow:
+        0 4px 6px -1px var(--shadow),
+        0 16px 40px -8px rgba(26,22,18,.09);
+      position: relative;
+      overflow: hidden;
+      min-height: 240px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 2rem;
+    }
+
+    /* Decorative corner mark */
+    .card::before {
+      content: '\201C';
+      font-family: var(--font-disp);
+      font-size: 9rem;
+      line-height: 1;
+      color: var(--accent);
+      opacity: .07;
+      position: absolute;
+      top: -1.2rem;
+      left: 1.2rem;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    /* Thin accent stripe */
+    .card::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 12%;
+      bottom: 12%;
+      width: 3px;
+      background: var(--accent);
+      border-radius: 0 3px 3px 0;
+    }
+
+    .quote-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .quote-text {
+      font-family: var(--font-disp);
+      font-size: clamp(1.25rem, 3.8vw, 1.65rem);
+      line-height: 1.55;
+      letter-spacing: -.01em;
+      color: var(--ink);
+      transition: opacity .3s var(--ease), transform .3s var(--ease);
+    }
+
+    .quote-text.fading {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+
+    .quote-author {
+      font-size: .88rem;
+      font-weight: 500;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: var(--accent);
+      transition: opacity .3s var(--ease);
+    }
+
+    .quote-author.fading { opacity: 0; }
+
+    /* ── Card footer (copy btn) ────────────────────── */
+    .card-footer {
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .copy-btn {
+      display: flex;
+      align-items: center;
+      gap: .45rem;
+      background: none;
+      border: 1.5px solid var(--border);
+      border-radius: 99px;
+      padding: .45rem 1rem;
+      font-family: var(--font-body);
+      font-size: .78rem;
+      font-weight: 500;
+      letter-spacing: .05em;
+      color: var(--ink-muted);
+      cursor: pointer;
+      transition: border-color .2s var(--ease), color .2s var(--ease), background .2s var(--ease);
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .copy-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .copy-btn.copied {
+      background: #d4edda;
+      border-color: #2ecc71;
+      color: #1a7a3c;
+    }
+
+    .copy-btn svg { flex-shrink: 0; }
+
+    /* ── Next button ───────────────────────────────── */
+    .next-btn {
+      width: 100%;
+      background: var(--ink);
+      color: #f5f0e8;
+      border: none;
+      border-radius: var(--radius);
+      padding: 1.05rem 1.5rem;
+      font-family: var(--font-body);
+      font-size: 1rem;
+      font-weight: 500;
+      letter-spacing: .04em;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: .6rem;
+      transition: background .2s var(--ease), transform .12s var(--ease), box-shadow .2s var(--ease);
+      box-shadow: 0 4px 12px rgba(26,22,18,.18);
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .next-btn:hover {
+      background: var(--accent);
+      box-shadow: 0 6px 20px rgba(192,57,43,.3);
+    }
+
+    .next-btn:active { transform: scale(.98); }
+
+    .next-btn .arrow {
+      display: inline-flex;
+      transition: transform .2s var(--ease);
+    }
+    .next-btn:hover .arrow { transform: translateX(4px); }
+
+    /* ── Footer ────────────────────────────────────── */
+    footer {
+      text-align: center;
+      font-size: .72rem;
+      font-weight: 300;
+      letter-spacing: .08em;
+      color: var(--ink-muted);
+      opacity: .6;
+    }
+
+    /* ── Toast notification ────────────────────────── */
+    .toast {
+      position: fixed;
+      bottom: 1.8rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(6px);
+      background: var(--ink);
+      color: #f5f0e8;
+      font-family: var(--font-body);
+      font-size: .8rem;
+      font-weight: 500;
+      padding: .6rem 1.4rem;
+      border-radius: 99px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .25s var(--ease), transform .25s var(--ease);
+      white-space: nowrap;
+      z-index: 100;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ── Responsive ────────────────────────────────── */
+    @media (max-width: 400px) {
+      .card { padding: 1.6rem 1.4rem; }
+      .logo-kata, .logo-jal { font-size: 1.8rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="wrapper">
+
+  <!-- HEADER -->
+  <header>
+    <div class="logo">
+      <span class="logo-kata">kata</span>
+      <span class="logo-jal">Jal</span>
+      <span class="logo-tagline" id="tagline">kata-kata bermakna</span>
+    </div>
+
+    <!-- Language toggle -->
+    <div class="lang-toggle" role="group" aria-label="Language selector">
+      <button class="lang-btn active" id="btn-bm" onclick="setLang('bm')" aria-pressed="true">BM</button>
+      <button class="lang-btn" id="btn-en" onclick="setLang('en')" aria-pressed="false">EN</button>
+    </div>
+  </header>
+
+  <!-- QUOTE CARD -->
+  <div class="card" role="region" aria-live="polite" aria-label="Quote display">
+    <div class="quote-body">
+      <p class="quote-text" id="quote-text"></p>
+      <p class="quote-author" id="quote-author"></p>
+    </div>
+    <div class="card-footer">
+      <button class="copy-btn" id="copy-btn" onclick="copyQuote()" aria-label="Copy quote">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+        </svg>
+        <span id="copy-label">Salin</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- NEXT BUTTON -->
+  <button class="next-btn" id="next-btn" onclick="nextQuote()" aria-label="Next quote">
+    <span id="next-label">Seterusnya</span>
+    <span class="arrow" aria-hidden="true">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M5 12h14M12 5l7 7-7 7"/>
+      </svg>
+    </span>
+  </button>
+
+  <!-- PAGE FOOTER -->
+  <footer>
+    <span id="footer-text">© 2025 kataJal — Semua kata-kata milik pengarang masing-masing.</span>
+  </footer>
+
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast" role="status" aria-live="assertive"></div>
+
+<script>
+  /* ══════════════════════════════════════════════════
+     QUOTE DATA
+     Add more quotes by extending each array below.
+     Format: { text: "...", author: "..." }
+  ══════════════════════════════════════════════════ */
+  const quotes = {
+    bm: [
+      {
+        text: "Ilmu yang tidak diamalkan adalah seperti pohon yang tidak berbuah.",
+        author: "Peribahasa Melayu"
+      },
+      {
+        text: "Jangan lihat siapa yang bercakap, tetapi lihat apa yang dicakap.",
+        author: "Peribahasa Melayu"
+      },
+      {
+        text: "Berani kerana benar, takut kerana salah.",
+        author: "Peribahasa Melayu"
+      },
+      {
+        text: "Usaha tangga kejayaan. Tanpa usaha, impian hanyalah lamunan.",
+        author: "Ungkapan Tradisional"
+      },
+      {
+        text: "Setiap detik yang berlalu adalah guru yang paling jujur.",
+        author: "Peribahasa Melayu"
+      }
+    ],
+    en: [
+      {
+        text: "The only way to do great work is to love what you do. If you haven't found it yet, keep looking.",
+        author: "Steve Jobs"
+      },
+      {
+        text: "In the middle of every difficulty lies opportunity.",
+        author: "Albert Einstein"
+      },
+      {
+        text: "It does not matter how slowly you go as long as you do not stop.",
+        author: "Confucius"
+      },
+      {
+        text: "The mind is everything. What you think, you become.",
+        author: "Buddha"
+      },
+      {
+        text: "Life is what happens when you're busy making other plans.",
+        author: "John Lennon"
+      }
+    ]
+  };
+
+  /* ══════════════════════════════════════════════════
+     UI COPY STRINGS
+  ══════════════════════════════════════════════════ */
+  const ui = {
+    bm: {
+      tagline:    "kata-kata bermakna",
+      copyLabel:  "Salin",
+      copiedLabel:"Disalin!",
+      nextLabel:  "Seterusnya",
+      toastCopied:"Petikan disalin ✓",
+      footer:     "© 2025 kataJal — Semua kata-kata milik pengarang masing-masing."
+    },
+    en: {
+      tagline:    "meaningful words",
+      copyLabel:  "Copy",
+      copiedLabel:"Copied!",
+      nextLabel:  "Next Quote",
+      toastCopied:"Quote copied ✓",
+      footer:     "© 2025 kataJal — All quotes belong to their respective authors."
+    }
+  };
+
+  /* ══════════════════════════════════════════════════
+     STATE
+  ══════════════════════════════════════════════════ */
+  let currentLang  = 'bm';
+  let lastIndex    = -1;
+  let toastTimer   = null;
+
+  /* ══════════════════════════════════════════════════
+     HELPERS
+  ══════════════════════════════════════════════════ */
+  function randomIndex(len) {
+    if (len === 1) return 0;
+    let idx;
+    do { idx = Math.floor(Math.random() * len); }
+    while (idx === lastIndex);
+    return idx;
+  }
+
+  function showToast(msg) {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.classList.add('show');
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
+  }
+
+  /* ══════════════════════════════════════════════════
+     DISPLAY QUOTE  (with fade transition)
+  ══════════════════════════════════════════════════ */
+  function displayQuote(idx) {
+    const textEl   = document.getElementById('quote-text');
+    const authorEl = document.getElementById('quote-author');
+    const pool     = quotes[currentLang];
+
+    textEl.classList.add('fading');
+    authorEl.classList.add('fading');
+
+    setTimeout(() => {
+      textEl.textContent   = '\u201C' + pool[idx].text + '\u201D';
+      authorEl.textContent = '— ' + pool[idx].author;
+      textEl.classList.remove('fading');
+      authorEl.classList.remove('fading');
+    }, 280);
+
+    lastIndex = idx;
+  }
+
+  /* ══════════════════════════════════════════════════
+     NEXT QUOTE
+  ══════════════════════════════════════════════════ */
+  function nextQuote() {
+    const idx = randomIndex(quotes[currentLang].length);
+    displayQuote(idx);
+  }
+
+  /* ══════════════════════════════════════════════════
+     LANGUAGE TOGGLE
+  ══════════════════════════════════════════════════ */
+  function setLang(lang) {
+    if (lang === currentLang) return;
+    currentLang = lang;
+    lastIndex   = -1;             // reset so first pick is truly random
+
+    /* Update HTML lang attribute */
+    document.documentElement.lang = lang === 'bm' ? 'ms' : 'en';
+
+    /* Swap toggle active state */
+    document.getElementById('btn-bm').classList.toggle('active', lang === 'bm');
+    document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+    document.getElementById('btn-bm').setAttribute('aria-pressed', lang === 'bm');
+    document.getElementById('btn-en').setAttribute('aria-pressed', lang === 'en');
+
+    /* Swap UI strings */
+    const t = ui[lang];
+    document.getElementById('tagline').textContent    = t.tagline;
+    document.getElementById('copy-label').textContent = t.copyLabel;
+    document.getElementById('next-label').textContent = t.nextLabel;
+    document.getElementById('footer-text').textContent = t.footer;
+
+    /* Show a new quote in the new language */
+    displayQuote(randomIndex(quotes[lang].length));
+  }
+
+  /* ══════════════════════════════════════════════════
+     COPY TO CLIPBOARD
+  ══════════════════════════════════════════════════ */
+  function copyQuote() {
+    const textEl   = document.getElementById('quote-text').textContent;
+    const authorEl = document.getElementById('quote-author').textContent;
+    const copyBtn  = document.getElementById('copy-btn');
+    const copyLbl  = document.getElementById('copy-label');
+    const full     = textEl + '\n' + authorEl + '\n\n— kataJal';
+
+    function onSuccess() {
+      copyBtn.classList.add('copied');
+      copyLbl.textContent = ui[currentLang].copiedLabel;
+      showToast(ui[currentLang].toastCopied);
+      setTimeout(() => {
+        copyBtn.classList.remove('copied');
+        copyLbl.textContent = ui[currentLang].copyLabel;
+      }, 2200);
+    }
+
+    function fallbackCopy() {
+      /* Works on HTTP, raw IPs, and older browsers */
+      const ta = document.createElement('textarea');
+      ta.value = full;
+      ta.setAttribute('readonly', '');          // prevent mobile keyboard popup
+      ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;pointer-events:none;';
+      document.body.appendChild(ta);
+
+      /* iOS requires a different selection method */
+      if (navigator.userAgent.match(/ipad|iphone/i)) {
+        const range = document.createRange();
+        range.selectNodeContents(ta);
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+        ta.setSelectionRange(0, 999999);
+      } else {
+        ta.select();
+      }
+
+      let ok = false;
+      try { ok = document.execCommand('copy'); } catch (e) {}
+      document.body.removeChild(ta);
+
+      if (ok) {
+        onSuccess();
+      } else {
+        /* Last resort: prompt the user to copy manually */
+        window.prompt('Tekan Ctrl+C / Cmd+C untuk salin:', full);
+      }
+    }
+
+    /* Try modern API first (works on HTTPS), fall back otherwise */
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(full).then(onSuccess).catch(fallbackCopy);
+    } else {
+      fallbackCopy();
+    }
+  }
+
+  /* ══════════════════════════════════════════════════
+     INIT — show first quote on load
+  ══════════════════════════════════════════════════ */
+  (function init() {
+    displayQuote(randomIndex(quotes[currentLang].length));
+  })();
+</script>
+</body>
+</html>
