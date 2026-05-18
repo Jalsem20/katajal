@@ -1,77 +1,76 @@
 <!DOCTYPE html>
 <html lang="ms">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="kataJal — kata-kata bermakna dalam dua bahasa. Meaningful quotes in two languages." />
-  <title>kataJal</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="kataJal — kata-kata bermakna dalam dua bahasa. Meaningful quotes in two languages.">
+    <title>kataJal — kata-kata bermakna</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,400;1,500&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 
-  <!-- Vercel Speed Insights -->
-  <script>
-    window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
-  </script>
-  <script defer src="/_vercel/speed-insights/script.js"></script>
-  <link rel="stylesheet" href="styles.css">
+    <script>
+      window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
+    </script>
+    <script defer src="/_vercel/speed-insights/script.js"></script>
+    
+    <script>
+      window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+    </script>
+    <script defer src="/_vercel/insights/script.js"></script>
+
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-<div class="wrapper">
+    <svg style="display:none;">
+        <filter id="noise">
+            <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch"/>
+            <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.04 0"/>
+        </filter>
+    </svg>
 
-  <!-- HEADER -->
-  <header>
-    <div class="logo">
-      <span class="logo-kata">kata</span>
-      <span class="logo-jal">Jal</span>
-      <span class="logo-tagline" id="tagline">kata-kata bermakna</span>
+    <div class="wrapper">
+        <header>
+            <div class="brand">
+                <h1 class="logo">kata<span>Jal</span></h1>
+                <div class="tagline" id="brandTagline">kata-kata bermakna</div>
+            </div>
+            
+            <div class="lang-toggle" onclick="toggleLanguage()" aria-label="Switch Language">
+                <button class="lang-btn active" id="btnMs">BM</button>
+                <button class="lang-btn" id="btnEn">EN</button>
+            </div>
+        </header>
+
+        <main>
+            <div class="quote-card">
+                <span class="khat-watermark" aria-hidden="true">“</span>
+                <div class="quote-display-area" id="quoteArea">
+                    <p class="quote-text" id="quoteText">“Sabar itu subur, ikhlas itu luas.”</p>
+                    <div class="quote-author" id="quoteAuthor">— Anonim</div>
+                </div>
+            </div>
+        </main>
+
+        <div class="action-tray">
+            <button class="btn-secondary" id="copyBtn" onclick="copyToClipboard()" title="Salin Petikan">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                <span id="copyBtnLabel">Salin</span>
+            </button>
+            
+            <button class="btn-primary" id="nextBtn" onclick="generateRandomQuote()">
+                <span id="nextBtnLabel">Seterusnya</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            </button>
+        </div>
     </div>
 
-    <!-- Language toggle -->
-    <div class="lang-toggle" role="group" aria-label="Language selector">
-      <button class="lang-btn active" id="btn-bm" onclick="setLang('bm')" aria-pressed="true">BM</button>
-      <button class="lang-btn" id="btn-en" onclick="setLang('en')" aria-pressed="false">EN</button>
-    </div>
-  </header>
+    <div class="toast" id="toastNotice" role="alert">Petikan disalin ✓</div>
 
-  <!-- QUOTE CARD -->
-  <div class="card" role="region" aria-live="polite" aria-label="Quote display">
-    <div class="quote-body">
-      <p class="quote-text" id="quote-text"></p>
-      <p class="quote-author" id="quote-author"></p>
-    </div>
-    <div class="card-footer">
-      <button class="copy-btn" id="copy-btn" onclick="copyQuote()" aria-label="Copy quote">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-        </svg>
-        <span id="copy-label">Salin</span>
-      </button>
-    </div>
-  </div>
+    <footer>&copy; 2026 kataJal. Segala hak terpelihara.</footer>
 
-  <!-- NEXT BUTTON -->
-  <button class="next-btn" id="next-btn" onclick="nextQuote()" aria-label="Next quote">
-    <span id="next-label">Seterusnya</span>
-    <span class="arrow" aria-hidden="true">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M5 12h14M12 5l7 7-7 7"/>
-      </svg>
-    </span>
-  </button>
-
-  <!-- PAGE FOOTER -->
-  <footer>
-    <span id="footer-text">© 2025 kataJal — Semua kata-kata milik pengarang masing-masing.</span>
-  </footer>
-
-</div>
-
-<!-- TOAST -->
-<div class="toast" id="toast" role="status" aria-live="assertive"></div>
-
-<script src="script.js" defer></script>
+    <script src="script.js" defer></script>
 </body>
 </html>

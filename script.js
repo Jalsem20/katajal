@@ -1,223 +1,163 @@
-/* ══════════════════════════════════════════════════
-   QUOTE DATA
-   Add more quotes by extending each array below.
-   Format: { text: "...", author: "..." }
-══════════════════════════════════════════════════ */
-const quotes = {
-  bm: [
-    {
-      text: "Ilmu yang tidak diamalkan adalah seperti pohon yang tidak berbuah.",
-      author: "Jal"
+// High-Quality Balanced Quote Repositories
+const database = {
+    ms: {
+        tagline: "kata-kata bermakna",
+        nextLabel: "Seterusnya",
+        copyLabel: "Salin",
+        copiedLabel: "Disalin!",
+        toastLabel: "Petikan disalin ✓",
+        copyright: "&copy; 2026 kataJal. Segala hak terpelihara.",
+        quotes: [
+            { text: "“Sabar itu subur, ikhlas itu luas.”", author: "Anonim" },
+            { text: "“Masa depan adalah milik mereka yang percaya pada keindahan impian mereka.”", author: "Eleanor Roosevelt" },
+            { text: "“Cara terbaik untuk meramal masa depan adalah dengan menciptanya.”", author: "Peter Drucker" },
+            { text: "“Bahasa menunjukkan bangsa, sastera membina jiwa.”", author: "Pendeta Za'ba" },
+            { text: "“Bukanlah lubuk yang dalam itu yang ditakuti, melainkan buaya yang tenang.”", author: "Peribahasa Melayu" }
+        ]
     },
-    {
-      text: "Jangan lihat siapa yang bercakap, tetapi lihat apa yang dicakap.",
-      author: "Jal"
-    },
-    {
-      text: "Berani kerana benar, takut kerana salah.",
-      author: "Jal"
-    },
-    {
-      text: "Usaha tangga kejayaan. Tanpa usaha, impian hanyalah lamunan.",
-      author: "Ungkapan Tradisional"
-    },
-    {
-      text: "Setiap detik yang berlalu adalah guru yang paling jujur.",
-      author: "Jal"
+    en: {
+        tagline: "meaningful words",
+        nextLabel: "Next Quote",
+        copyLabel: "Copy",
+        copiedLabel: "Copied!",
+        toastLabel: "Quote copied ✓",
+        copyright: "&copy; 2026 kataJal. All rights reserved.",
+        quotes: [
+            { text: "“Patience is fertile, sincerity is boundlessly vast.”", author: "Anonymous" },
+            { text: "“The future belongs to those who believe in the beauty of their dreams.”", author: "Eleanor Roosevelt" },
+            { text: "“The best way to predict the future is to create it.”", author: "Peter Drucker" },
+            { text: "“Language defines the nation, literature builds the soul.”", author: "Pendeta Za'ba" },
+            { text: "“It is not the deep water that is feared, but the silent crocodile.”", author: "Malay Proverb" }
+        ]
     }
-  ],
-  en: [
-    {
-      text: "The only way to do great work is to love what you do. If you haven't found it yet, keep looking.",
-      author: "Steve Jobs"
-    },
-    {
-      text: "In the middle of every difficulty lies opportunity.",
-      author: "Albert Einstein"
-    },
-    {
-      text: "It does not matter how slowly you go as long as you do not stop.",
-      author: "Confucius"
-    },
-    {
-      text: "The mind is everything. What you think, you become.",
-      author: "Buddha"
-    },
-    {
-      text: "Life is what happens when you're busy making other plans.",
-      author: "John Lennon"
-    }
-  ]
 };
 
-/* ══════════════════════════════════════════════════
-   UI COPY STRINGS
-══════════════════════════════════════════════════ */
-const ui = {
-  bm: {
-    tagline:    "kata-kata bermakna",
-    copyLabel:  "Salin",
-    copiedLabel:"Disalin!",
-    nextLabel:  "Seterusnya",
-    toastCopied:"Petikan disalin ✓",
-    footer:     "© 2025 kataJal — Semua kata-kata milik pengarang masing-masing."
-  },
-  en: {
-    tagline:    "meaningful words",
-    copyLabel:  "Copy",
-    copiedLabel:"Copied!",
-    nextLabel:  "Next Quote",
-    toastCopied:"Quote copied ✓",
-    footer:     "© 2025 kataJal — All quotes belong to their respective authors."
-  }
-};
+let currentLanguage = 'ms';
+let lastQuoteIndex = -1;
+let toastTimeout = null;
 
-/* ══════════════════════════════════════════════════
-   STATE
-══════════════════════════════════════════════════ */
-let currentLang  = 'bm';
-let lastIndex    = -1;
-let toastTimer   = null;
+// Core Language Switch Interface Controller
+function toggleLanguage() {
+    currentLanguage = (currentLanguage === 'ms') ? 'en' : 'ms';
+    
+    // Adjust Active Navigation Status Indicators
+    document.getElementById('btnMs').classList.toggle('active', currentLanguage === 'ms');
+    document.getElementById('btnEn').classList.toggle('active', currentLanguage === 'en');
+    
+    // Synchronize Fixed Copy Labels
+    document.getElementById('brandTagline').innerText = database[currentLanguage].tagline;
+    document.getElementById('nextBtnLabel').innerText = database[currentLanguage].nextLabel;
+    document.getElementById('copyBtnLabel').innerText = database[currentLanguage].copyLabel;
+    document.querySelector('footer').innerHTML = database[currentLanguage].copyright;
 
-/* ══════════════════════════════════════════════════
-   HELPERS
-══════════════════════════════════════════════════ */
-function randomIndex(len) {
-  if (len === 1) return 0;
-  let idx;
-  do { idx = Math.floor(Math.random() * len); }
-  while (idx === lastIndex);
-  return idx;
+    // Reset matching history matrix states for clean seeding
+    lastQuoteIndex = -1;
+    generateRandomQuote();
 }
 
-function showToast(msg) {
-  const toast = document.getElementById('toast');
-  toast.textContent = msg;
-  toast.classList.add('show');
-  if (toastTimer) clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
-}
+// Optimized Anti-Repetitive Randomizer Engine
+function generateRandomQuote() {
+    const targetArea = document.getElementById('quoteArea');
+    const collection = database[currentLanguage].quotes;
+    
+    if (collection.length <= 1) return;
 
-/* ══════════════════════════════════════════════════
-   DISPLAY QUOTE  (with fade transition)
-══════════════════════════════════════════════════ */
-function displayQuote(idx) {
-  const textEl   = document.getElementById('quote-text');
-  const authorEl = document.getElementById('quote-author');
-  const pool     = quotes[currentLang];
+    let nextIndex;
+    do {
+        nextIndex = Math.floor(Math.random() * collection.length);
+    } while (nextIndex === lastQuoteIndex);
 
-  textEl.classList.add('fading');
-  authorEl.classList.add('fading');
+    lastQuoteIndex = nextIndex;
+    const targetQuote = collection[nextIndex];
 
-  setTimeout(() => {
-    textEl.textContent   = '\u201C' + pool[idx].text + '\u201D';
-    authorEl.textContent = '— ' + pool[idx].author;
-    textEl.classList.remove('fading');
-    authorEl.classList.remove('fading');
-  }, 280);
+    // Trigger Section 6 Easing Motion Transitions
+    targetArea.classList.add('is-switching');
 
-  lastIndex = idx;
-}
-
-/* ══════════════════════════════════════════════════
-   NEXT QUOTE
-══════════════════════════════════════════════════ */
-function nextQuote() {
-  const idx = randomIndex(quotes[currentLang].length);
-  displayQuote(idx);
-}
-
-/* ══════════════════════════════════════════════════
-   LANGUAGE TOGGLE
-══════════════════════════════════════════════════ */
-function setLang(lang) {
-  if (lang === currentLang) return;
-  currentLang = lang;
-  lastIndex   = -1;             // reset so first pick is truly random
-
-  /* Update HTML lang attribute */
-  document.documentElement.lang = lang === 'bm' ? 'ms' : 'en';
-
-  /* Swap toggle active state */
-  document.getElementById('btn-bm').classList.toggle('active', lang === 'bm');
-  document.getElementById('btn-en').classList.toggle('active', lang === 'en');
-  document.getElementById('btn-bm').setAttribute('aria-pressed', lang === 'bm');
-  document.getElementById('btn-en').setAttribute('aria-pressed', lang === 'en');
-
-  /* Swap UI strings */
-  const t = ui[lang];
-  document.getElementById('tagline').textContent    = t.tagline;
-  document.getElementById('copy-label').textContent = t.copyLabel;
-  document.getElementById('next-label').textContent = t.nextLabel;
-  document.getElementById('footer-text').textContent = t.footer;
-
-  /* Show a new quote in the new language */
-  displayQuote(randomIndex(quotes[lang].length));
-}
-
-/* ══════════════════════════════════════════════════
-   COPY TO CLIPBOARD
-══════════════════════════════════════════════════ */
-function copyQuote() {
-  const textEl   = document.getElementById('quote-text').textContent;
-  const authorEl = document.getElementById('quote-author').textContent;
-  const copyBtn  = document.getElementById('copy-btn');
-  const copyLbl  = document.getElementById('copy-label');
-  const full     = textEl + '\n' + authorEl + '\n\n— kataJal';
-
-  function onSuccess() {
-    copyBtn.classList.add('copied');
-    copyLbl.textContent = ui[currentLang].copiedLabel;
-    showToast(ui[currentLang].toastCopied);
     setTimeout(() => {
-      copyBtn.classList.remove('copied');
-      copyLbl.textContent = ui[currentLang].copyLabel;
-    }, 2200);
-  }
-
-  function fallbackCopy() {
-    /* Works on HTTP, raw IPs, and older browsers */
-    const ta = document.createElement('textarea');
-    ta.value = full;
-    ta.setAttribute('readonly', '');          // prevent mobile keyboard popup
-    ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;pointer-events:none;';
-    document.body.appendChild(ta);
-
-    /* iOS requires a different selection method */
-    if (navigator.userAgent.match(/ipad|iphone/i)) {
-      const range = document.createRange();
-      range.selectNodeContents(ta);
-      const sel = window.getSelection();
-      sel.removeAllRanges();
-      sel.addRange(range);
-      ta.setSelectionRange(0, 999999);
-    } else {
-      ta.select();
-    }
-
-    let ok = false;
-    try { ok = document.execCommand('copy'); } catch (e) {}
-    document.body.removeChild(ta);
-
-    if (ok) {
-      onSuccess();
-    } else {
-      /* Last resort: prompt the user to copy manually */
-      window.prompt('Tekan Ctrl+C / Cmd+C untuk salin:', full);
-    }
-  }
-
-  /* Try modern API first (works on HTTPS), fall back otherwise */
-  if (navigator.clipboard && window.isSecureContext) {
-    navigator.clipboard.writeText(full).then(onSuccess).catch(fallbackCopy);
-  } else {
-    fallbackCopy();
-  }
+        document.getElementById('quoteText').innerText = targetQuote.text;
+        document.getElementById('quoteAuthor').innerText = `— ${targetQuote.author}`;
+        targetArea.classList.remove('is-switching');
+        
+        // Clear active copy success states gracefully if moving onward
+        resetCopyButtonState();
+    }, 150);
 }
 
-/* ══════════════════════════════════════════════════
-   INIT — show first quote on load
-══════════════════════════════════════════════════ */
-(function init() {
-  displayQuote(randomIndex(quotes[currentLang].length));
-})();
+// Global Secure Mobile-Fallback Clipboard Controller Engine
+function copyToClipboard() {
+    const textToCopy = document.getElementById('quoteText').innerText;
+    const fullOutput = `${textToCopy}`;
+
+    // Target fallback engines if platform environment is inside restricted WebViews
+    if (!navigator.clipboard) {
+        fallbackCopyToClipboard(fullOutput);
+        return;
+    }
+
+    navigator.clipboard.writeText(fullOutput).then(() => {
+        triggerToastAlert();
+        triggerCopyButtonSuccess();
+    }).catch(err => {
+        fallbackCopyToClipboard(fullOutput);
+    });
+}
+
+// Legacy Textarea Sandbox Generator for Mobile App Browsers
+function fallbackCopyToClipboard(text) {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    
+    textArea.style.position = "fixed";
+    textArea.style.top = "0";
+    textArea.style.left = "0";
+    textArea.style.opacity = "0";
+    
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+
+    try {
+        document.execCommand('copy');
+        triggerToastAlert();
+        triggerCopyButtonSuccess();
+    } catch (err) {
+        console.error('Fallback copy engine catastrophic execution failure: ', err);
+    }
+
+    document.body.removeChild(textArea);
+}
+
+// Animation State UI Helper Functions
+function triggerToastAlert() {
+    const toast = document.getElementById('toastNotice');
+    toast.innerText = database[currentLanguage].toastLabel;
+    
+    clearTimeout(toastTimeout);
+    toast.classList.add('visible');
+
+    toastTimeout = setTimeout(() => {
+        toast.classList.remove('visible');
+        resetCopyButtonState();
+    }, 2200);
+}
+
+function triggerCopyButtonSuccess() {
+    const copyBtn = document.getElementById('copyBtn');
+    const copyLabel = document.getElementById('copyBtnLabel');
+    
+    if (copyBtn) copyBtn.classList.add('success-state');
+    if (copyLabel) copyLabel.innerText = database[currentLanguage].copiedLabel;
+}
+
+function resetCopyButtonState() {
+    const copyBtn = document.getElementById('copyBtn');
+    const copyLabel = document.getElementById('copyBtnLabel');
+    
+    if (copyBtn) copyBtn.classList.remove('success-state');
+    if (copyLabel) copyLabel.innerText = database[currentLanguage].copyLabel;
+}
+
+// Initialize First Application State Run Setup
+window.addEventListener('DOMContentLoaded', () => {
+    generateRandomQuote();
+});

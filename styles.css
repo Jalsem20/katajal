@@ -1,317 +1,329 @@
-/* ── CSS Variables ─────────────────────────────── */
+/* ------------------------------------
+   1. CSS Custom Tokens & Reset
+   ------------------------------------ */
 :root {
-  --bg:        #f5f0e8;
-  --surface:   #fffdf8;
-  --ink:       #1a1612;
-  --ink-muted: #7a6e62;
-  --accent:    #c0392b;
-  --accent-dk: #96291f;
-  --border:    #e0d8cc;
-  --shadow:    rgba(26,22,18,.08);
-  --radius:    18px;
-  --ease:      cubic-bezier(.4,0,.2,1);
-  --font-disp: 'DM Serif Display', Georgia, serif;
-  --font-body: 'DM Sans', system-ui, sans-serif;
+    /* Dark Mode Core Theme */
+    --bg: #1C1208;
+    --bg-deep: #120C05;
+    --surface: #26180A;
+    --surface-raised: #2E1E0D;
+    --ink: #F0E6D0;
+    --ink-muted: #A89070;
+    --ink-faint: #5C4A30;
+    --accent: #C9973A;
+    --accent-bright: #E8B84B;
+    --accent-dim: #7A5A1E;
+    --border: #3A2510;
+    --border-accent: #6B4A1A;
+    --shadow: rgba(0, 0, 0, 0.4);
+
+    /* Spacing System Units */
+    --space-xs: 0.5rem;
+    --space-sm: 1rem;
+    --space-md: 1.5rem;
+    --space-lg: 2rem;
+    --space-xl: 3rem;
 }
 
-/* ── Reset ─────────────────────────────────────── */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
 
 body {
-  min-height: 100svh;
-  background: var(--bg);
-  color: var(--ink);
-  font-family: var(--font-body);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 1.5rem 1rem 2.5rem;
-  position: relative;
-  overflow-x: hidden;
+    font-family: 'DM Sans', system-ui, sans-serif;
+    background-color: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-md);
+    overflow-x: hidden;
+    position: relative;
 }
 
-/* ── Decorative background grain ──────────────── */
+/* Aged Paper Texture Overlay System */
 body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background-image:
-    radial-gradient(ellipse 80% 60% at 20% 10%, rgba(192,57,43,.07) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 50% at 80% 90%, rgba(192,57,43,.05) 0%, transparent 55%);
-  pointer-events: none;
-  z-index: 0;
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    filter: url(#noise);
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 1;
 }
 
-/* ── Page wrapper ──────────────────────────────── */
+/* ------------------------------------
+   2. Layout Structure & Containers
+   ------------------------------------ */
 .wrapper {
-  position: relative;
-  z-index: 1;
-  width: 100%;
-  max-width: 680px;
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
+    width: 100%;
+    max-width: 680px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xl);
+    flex-grow: 1;
+    justify-content: center;
 }
 
-/* ── Header ────────────────────────────────────── */
 header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 .25rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: var(--space-xs);
+}
+
+.brand {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
 }
 
 .logo {
-  display: flex;
-  flex-direction: column;
-  line-height: 1;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: clamp(2rem, 6vw, 2.8rem);
+    color: var(--ink);
+    user-select: none;
 }
 
-.logo-kata {
-  font-family: var(--font-disp);
-  font-size: clamp(2rem, 6vw, 2.8rem);
-  letter-spacing: -.03em;
-  color: var(--ink);
+.logo span {
+    font-style: italic;
+    color: var(--accent-bright);
 }
 
-.logo-jal {
-  font-family: var(--font-disp);
-  font-style: italic;
-  font-size: clamp(2rem, 6vw, 2.8rem);
-  letter-spacing: -.03em;
-  color: var(--accent);
-  margin-top: -.15em;
+.tagline {
+    font-size: 0.72rem;
+    font-weight: 300;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--ink-muted);
 }
 
-.logo-tagline {
-  font-size: .72rem;
-  font-weight: 300;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  color: var(--ink-muted);
-  margin-top: .35rem;
-}
-
-/* ── Language toggle ───────────────────────────── */
+/* ------------------------------------
+   3. Core Components
+   ------------------------------------ */
 .lang-toggle {
-  display: flex;
-  align-items: center;
-  background: var(--surface);
-  border: 1.5px solid var(--border);
-  border-radius: 99px;
-  padding: .25rem;
-  gap: .2rem;
-  box-shadow: 0 2px 8px var(--shadow);
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 99px;
+    padding: 0.25rem;
+    display: flex;
+    gap: 2px;
+    cursor: pointer;
 }
 
 .lang-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-family: var(--font-body);
-  font-size: .78rem;
-  font-weight: 500;
-  letter-spacing: .06em;
-  padding: .38rem .85rem;
-  border-radius: 99px;
-  color: var(--ink-muted);
-  transition: background .2s var(--ease), color .2s var(--ease);
-  -webkit-tap-highlight-color: transparent;
+    background: transparent;
+    border: none;
+    color: var(--ink-muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    padding: 0.4rem 0.8rem;
+    border-radius: 99px;
+    cursor: pointer;
+    transition: all 200ms cubic-bezier(.4,0,.2,1);
+    min-width: 44px;
+    min-height: 32px;
 }
 
 .lang-btn.active {
-  background: var(--accent);
-  color: #fff;
+    background: var(--accent);
+    color: var(--bg-deep);
 }
 
-/* ── Quote card ────────────────────────────────── */
-.card {
-  background: var(--surface);
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius);
-  padding: clamp(2rem, 6vw, 3rem) clamp(1.75rem, 6vw, 2.75rem);
-  box-shadow:
-    0 4px 6px -1px var(--shadow),
-    0 16px 40px -8px rgba(26,22,18,.09);
-  position: relative;
-  overflow: hidden;
-  min-height: 240px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  gap: 2rem;
+/* Hero Quote Card */
+.quote-card {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 20px;
+    padding: clamp(2rem, 6vw, 3rem) clamp(1.75rem, 6vw, 2.75rem);
+    box-shadow: 0 8px 40px var(--shadow);
+    position: relative;
+    min-height: 260px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: var(--space-md);
 }
 
-/* Decorative corner mark */
-.card::before {
-  content: '\201C';
-  font-family: var(--font-disp);
-  font-size: 9rem;
-  line-height: 1;
-  color: var(--accent);
-  opacity: .07;
-  position: absolute;
-  top: -1.2rem;
-  left: 1.2rem;
-  pointer-events: none;
-  user-select: none;
+/* Left Accent Manuscript Border Binding line */
+.quote-card::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 12%;
+    bottom: 12%;
+    width: 3px;
+    background: var(--accent);
+    border-radius: 0 2px 2px 0;
 }
 
-/* Thin accent stripe */
-.card::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 12%;
-  bottom: 12%;
-  width: 3px;
-  background: var(--accent);
-  border-radius: 0 3px 3px 0;
+/* Calligraphic Khat watermark backdrop asset */
+.khat-watermark {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 9rem;
+    color: var(--accent);
+    opacity: 0.10;
+    position: absolute;
+    top: -1rem;
+    left: 1.5rem;
+    pointer-events: none;
+    line-height: 1;
+    user-select: none;
 }
 
-.quote-body {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
+.quote-display-area {
+    width: 100%;
+    transition: transform 300ms cubic-bezier(.4,0,.2,1), opacity 300ms cubic-bezier(.4,0,.2,1);
 }
 
 .quote-text {
-  font-family: var(--font-disp);
-  font-size: clamp(1.25rem, 3.8vw, 1.65rem);
-  line-height: 1.55;
-  letter-spacing: -.01em;
-  color: var(--ink);
-  transition: opacity .3s var(--ease), transform .3s var(--ease);
-}
-
-.quote-text.fading {
-  opacity: 0;
-  transform: translateY(6px);
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: clamp(1.3rem, 4vw, 1.8rem);
+    font-style: italic;
+    line-height: 1.6;
+    color: var(--ink);
+    margin-bottom: var(--space-sm);
+    text-align: left;
 }
 
 .quote-author {
-  font-size: .88rem;
-  font-weight: 500;
-  letter-spacing: .06em;
-  text-transform: uppercase;
-  color: var(--accent);
-  transition: opacity .3s var(--ease);
+    font-size: 0.82rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ink-muted);
+    display: flex;
+    align-items: center;
 }
 
-.quote-author.fading { opacity: 0; }
-
-/* ── Card footer (copy btn) ────────────────────── */
-.card-footer {
-  display: flex;
-  justify-content: flex-end;
+.action-tray {
+    display: flex;
+    gap: var(--space-sm);
+    width: 100%;
+    align-items: center;
+    margin-top: var(--space-xs);
 }
 
-.copy-btn {
-  display: flex;
-  align-items: center;
-  gap: .45rem;
-  background: none;
-  border: 1.5px solid var(--border);
-  border-radius: 99px;
-  padding: .45rem 1rem;
-  font-family: var(--font-body);
-  font-size: .78rem;
-  font-weight: 500;
-  letter-spacing: .05em;
-  color: var(--ink-muted);
-  cursor: pointer;
-  transition: border-color .2s var(--ease), color .2s var(--ease), background .2s var(--ease);
-  -webkit-tap-highlight-color: transparent;
+/* Primary Controller Elements */
+.btn-primary {
+    background: var(--surface-raised);
+    border: 1.5px solid var(--accent-dim);
+    border-radius: 14px;
+    padding: 1.05rem 1.5rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--accent-bright);
+    cursor: pointer;
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--space-xs);
+    transition: all 200ms cubic-bezier(.4,0,.2,1);
+    min-height: 48px;
 }
 
-.copy-btn:hover {
-  border-color: var(--accent);
-  color: var(--accent);
+.btn-primary:hover {
+    background: var(--accent);
+    color: var(--bg-deep);
+    border-color: var(--accent);
 }
 
-.copy-btn.copied {
-  background: #d4edda;
-  border-color: #2ecc71;
-  color: #1a7a3c;
+/* Secondary Clipboard Pill Styles */
+.btn-secondary {
+    background: transparent;
+    border: 1.5px solid var(--border);
+    border-radius: 99px;
+    padding: 0.45rem 1rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--ink-muted);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 200ms cubic-bezier(.4,0,.2,1);
+    min-height: 44px;
 }
 
-.copy-btn svg { flex-shrink: 0; }
-
-/* ── Next button ───────────────────────────────── */
-.next-btn {
-  width: 100%;
-  background: var(--ink);
-  color: #f5f0e8;
-  border: none;
-  border-radius: var(--radius);
-  padding: 1.05rem 1.5rem;
-  font-family: var(--font-body);
-  font-size: 1rem;
-  font-weight: 500;
-  letter-spacing: .04em;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: .6rem;
-  transition: background .2s var(--ease), transform .12s var(--ease), box-shadow .2s var(--ease);
-  box-shadow: 0 4px 12px rgba(26,22,18,.18);
-  -webkit-tap-highlight-color: transparent;
+.btn-secondary:hover {
+    border-color: var(--accent);
+    color: var(--accent);
 }
 
-.next-btn:hover {
-  background: var(--accent);
-  box-shadow: 0 6px 20px rgba(192,57,43,.3);
+.btn-secondary.success-state {
+    background: #1A3320;
+    border-color: #2ecc71;
+    color: #4ade80;
 }
 
-.next-btn:active { transform: scale(.98); }
-
-.next-btn .arrow {
-  display: inline-flex;
-  transition: transform .2s var(--ease);
-}
-.next-btn:hover .arrow { transform: translateX(4px); }
-
-/* ── Footer ────────────────────────────────────── */
-footer {
-  text-align: center;
-  font-size: .72rem;
-  font-weight: 300;
-  letter-spacing: .08em;
-  color: var(--ink-muted);
-  opacity: .6;
+button:active {
+    transform: scale(0.97);
 }
 
-/* ── Toast notification ────────────────────────── */
+/* Toast Notifications alert modules */
 .toast {
-  position: fixed;
-  bottom: 1.8rem;
-  left: 50%;
-  transform: translateX(-50%) translateY(6px);
-  background: var(--ink);
-  color: #f5f0e8;
-  font-family: var(--font-body);
-  font-size: .8rem;
-  font-weight: 500;
-  padding: .6rem 1.4rem;
-  border-radius: 99px;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity .25s var(--ease), transform .25s var(--ease);
-  white-space: nowrap;
-  z-index: 100;
+    background: var(--surface-raised);
+    border: 1px solid var(--accent-dim);
+    border-radius: 99px;
+    color: var(--ink);
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 0.6rem 1.2rem;
+    position: fixed;
+    bottom: 1.8rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(8px);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 250ms cubic-bezier(.4,0,.2,1), opacity 250ms cubic-bezier(.4,0,.2,1);
+    z-index: 1000;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
 }
 
-.toast.show {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
+.toast.visible {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
 }
 
-/* ── Responsive ────────────────────────────────── */
-@media (max-width: 400px) {
-  .card { padding: 1.6rem 1.4rem; }
-  .logo-kata, .logo-jal { font-size: 1.8rem; }
+footer {
+    font-size: 0.72rem;
+    font-weight: 300;
+    color: var(--ink-faint);
+    margin-top: var(--space-xl);
+    text-align: center;
+    width: 100%;
+}
+
+/* ------------------------------------
+   4. Motion Guardrails & Accessibility
+   ------------------------------------ */
+.is-switching {
+    opacity: 0;
+    transform: translateY(6px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+    }
+    .is-switching {
+        opacity: 0 !important;
+        transform: none !important;
+    }
 }
