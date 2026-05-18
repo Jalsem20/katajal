@@ -96,7 +96,7 @@ function generateRandomQuote() {
             authorElement.classList.add('visible');
             resetCopyButtonState();
         }
-    }, 45); // Adjust writing speed delivery here (lower numbers mean faster writing)
+    }, 25); // Adjust writing speed delivery here (lower numbers mean faster writing)
 }
 
 function copyToClipboard() {
