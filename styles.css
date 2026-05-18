@@ -128,6 +128,12 @@ header {
     background-size: 100% 2rem; /* 2rem line height spacing */
     line-height: 2rem;
     overflow: hidden;
+
+    /* CHANGE THIS LINE TO CENTER VERTICALLY */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; 
+    align-items: center;
 }
 
 /* Red Vertical Notebook Margin Line */
@@ -143,6 +149,10 @@ header {
 
 .quote-display-area {
     width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;    /* Centers the layout container */
+    text-align: center;     /* Centers the actual text lines */
     position: relative;
 }
 
