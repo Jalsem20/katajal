@@ -9,7 +9,7 @@ async function loadDatabase() {
     try {
         const response = await fetch('data/quotes.json');
         database = await response.json();
-        generateRandomQuote(); 
+        generateRandomQuote();
     } catch (err) {
         console.error('Failed to stream JSON data profile:', err);
     }
@@ -24,14 +24,23 @@ function generateRandomQuote() {
     const authorElement = document.getElementById('quoteAuthor');
     const pencilElement = document.getElementById('pencilCursor');
     const collection = database[currentLanguage].quotes;
-    
+
     if (collection.length <= 1) return;
+    // Shuffle queue — guarantees no repeat until all quotes are shown
+    if (!window._quoteQueue || window._quoteQueue.length === 0) {
+        window._quoteQueue = [...Array(collection.length).keys()];
+        // Fisher-Yates shuffle
+        for (let i = window._quoteQueue.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [window._quoteQueue[i], window._quoteQueue[j]] = [window._quoteQueue[j], window._quoteQueue[i]];
+        }
+        // Prevent first quote of new shuffle matching last shown
+        if (window._quoteQueue[0] === lastQuoteIndex && window._quoteQueue.length > 1) {
+            [window._quoteQueue[0], window._quoteQueue[1]] = [window._quoteQueue[1], window._quoteQueue[0]];
+        }
+    }
 
-    let nextIndex;
-    do {
-        nextIndex = Math.floor(Math.random() * collection.length);
-    } while (nextIndex === lastQuoteIndex);
-
+    const nextIndex = window._quoteQueue.shift();
     lastQuoteIndex = nextIndex;
     const targetQuote = collection[nextIndex];
     const fullText = targetQuote.text;
@@ -59,10 +68,10 @@ function generateRandomQuote() {
 function toggleLanguage() {
     if (!database) return;
     currentLanguage = (currentLanguage === 'ms') ? 'en' : 'ms';
-    
+
     document.getElementById('btnMs').classList.toggle('active', currentLanguage === 'ms');
     document.getElementById('btnEn').classList.toggle('active', currentLanguage === 'en');
-    
+
     document.getElementById('brandTagline').innerText = database[currentLanguage].tagline;
     document.getElementById('nextBtnLabel').innerText = database[currentLanguage].nextLabel;
     document.getElementById('copyBtnLabel').innerText = database[currentLanguage].copyLabel;
@@ -70,6 +79,10 @@ function toggleLanguage() {
 
     lastQuoteIndex = -1;
     generateRandomQuote();
+
+    // Add this when language switches
+    window._quoteQueue = [];
+    lastQuoteIndex = -1;
 }
 
 // Clipboard Safe Copy Controllers
@@ -112,7 +125,7 @@ function fallbackCopyToClipboard(text) {
 function triggerToastAlert() {
     const toast = document.getElementById('toastNotice');
     toast.innerText = database[currentLanguage].toastLabel;
-    
+
     clearTimeout(toastTimeout);
     toast.classList.add('visible');
 
