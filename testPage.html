@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>kataJal — kata-kata bermakna</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,400;1,500&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <script>
+      window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
+    </script>
+    <script defer src="/_vercel/speed-insights/script.js"></script>
+    
+    <script>
+      window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+    </script>
+    <script defer src="/_vercel/insights/script.js"></script>
+
+    <style>
+        /* ------------------------------------
+           1. CSS Custom Tokens & Reset
+           ------------------------------------ */
+        :root {
+            /* Dark Mode Core (Primary Design Target) */
+            --bg: #1C1208;
+            --bg-deep: #120C05;
+            --surface: #26180A;
+            --surface-raised: #2E1E0D;
+            --ink: #F0E6D0;
+            --ink-muted: #A89070;
+            --ink-faint: #5C4A30;
+            --accent: #C9973A;
+            --accent-bright: #E8B84B;
+            --accent-dim: #7A5A1E;
+            --border: #3A2510;
+            --border-accent: #6B4A1A;
+            --shadow: rgba(0, 0, 0, 0.4);
+
+            /* Spacing System Units */
+            --space-xs: 0.5rem;
+            --space-sm: 1rem;
+            --space-md: 1.5rem;
+            --space-lg: 2rem;
+            --space-xl: 3rem;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'DM Sans', system-ui, sans-serif;
+            background-color: var(--bg);
+            color: var(--ink);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-md);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* 4.2 Aged Paper Texture Overlay */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            filter: url(#noise);
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 1;
+        }
+
+        /* ------------------------------------
+           2. Layout Structure & Containers
+           ------------------------------------ */
+        .wrapper {
+            width: 100%;
+            max-width: 680px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-xl);
+            flex-grow: 1;
+            justify-content: center;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            margin-bottom: var(--space-xs);
+        }
+
+        .brand {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .logo {
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            font-size: clamp(2rem, 6vw, 2.8rem);
+            color: var(--ink);
+            user-select: none;
+        }
+
+        .logo span {
+            font-style: italic;
+            color: var(--accent-bright);
+        }
+
+        .tagline {
+            font-size: 0.72rem;
+            font-weight: 300;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--ink-muted);
+        }
+
+        /* ------------------------------------
+           3. Core Components
+           ------------------------------------ */
+        
+        /* Language Toggle Script Base */
+        .lang-toggle {
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            border-radius: 99px;
+            padding: 0.25rem;
+            display: flex;
+            gap: 2px;
+            cursor: pointer;
+        }
+
+        .lang-btn {
+            background: transparent;
+            border: none;
+            color: var(--ink-muted);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.78rem;
+            font-weight: 500;
+            letter-spacing: 0.06em;
+            padding: 0.4rem 0.8rem;
+            border-radius: 99px;
+            cursor: pointer;
+            transition: all 200ms cubic-bezier(.4,0,.2,1);
+            min-width: 44px;
+            min-height: 32px;
+        }
+
+        .lang-btn.active {
+            background: var(--accent);
+            color: var(--bg-deep);
+        }
+
+        /* The Hero Quote Card */
+        .quote-card {
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            border-radius: 20px;
+            padding: clamp(2rem, 6vw, 3rem) clamp(1.75rem, 6vw, 2.75rem);
+            box-shadow: 0 8px 40px var(--shadow);
+            position: relative;
+            min-height: 260px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            gap: var(--space-md);
+        }
+
+        /* 4.4 Accent Left Binding Stripe */
+        .quote-card::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 12%;
+            bottom: 12%;
+            width: 3px;
+            background: var(--accent);
+            border-radius: 0 2px 2px 0;
+        }
+
+        /* 4.1 Calligraphic Khat Decorative Backdrop */
+        .khat-watermark {
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            font-size: 9rem;
+            color: var(--accent);
+            opacity: 0.10;
+            position: absolute;
+            top: -1rem;
+            left: 1.5rem;
+            pointer-events: none;
+            line-height: 1;
+            user-select: none;
+        }
+
+        .quote-display-area {
+            width: 100%;
+            transition: transform 300ms cubic-bezier(.4,0,.2,1), opacity 300ms cubic-bezier(.4,0,.2,1);
+        }
+
+        .quote-text {
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            font-size: clamp(1.3rem, 4vw, 1.8rem);
+            font-style: italic;
+            line-height: 1.6;
+            color: var(--ink);
+            margin-bottom: var(--space-sm);
+            text-align: left;
+        }
+
+        .quote-author {
+            font-size: 0.82rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--ink-muted);
+            display: flex;
+            align-items: center;
+        }
+
+        /* Control Tray layout */
+        .action-tray {
+            display: flex;
+            gap: var(--space-sm);
+            width: 100%;
+            align-items: center;
+            margin-top: var(--space-xs);
+        }
+
+        /* Primary Button Style */
+        .btn-primary {
+            background: var(--surface-raised);
+            border: 1.5px solid var(--accent-dim);
+            border-radius: 14px;
+            padding: 1.05rem 1.5rem;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--accent-bright);
+            cursor: pointer;
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: var(--space-xs);
+            transition: all 200ms cubic-bezier(.4,0,.2,1);
+            min-height: 48px;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent);
+            color: var(--bg-deep);
+            border-color: var(--accent);
+        }
+
+        /* Secondary Pill Button Style */
+        .btn-secondary {
+            background: transparent;
+            border: 1.5px solid var(--border);
+            border-radius: 99px;
+            padding: 0.45rem 1rem;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.78rem;
+            font-weight: 500;
+            color: var(--ink-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 200ms cubic-bezier(.4,0,.2,1);
+            min-height: 44px;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .btn-secondary.success-state {
+            background: #1A3320;
+            border-color: #2ecc71;
+            color: #4ade80;
+        }
+
+        /* Interactive Dynamic Actions */
+        button:active {
+            transform: scale(0.97);
+        }
+
+        /* 5. Toast Notifications */
+        .toast {
+            background: var(--surface-raised);
+            border: 1px solid var(--accent-dim);
+            border-radius: 99px;
+            color: var(--ink);
+            font-size: 0.8rem;
+            font-weight: 500;
+            padding: 0.6rem 1.2rem;
+            position: fixed;
+            bottom: 1.8rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(8px);
+            opacity: 0;
+            pointer-events: none;
+            transition: transform 250ms cubic-bezier(.4,0,.2,1), opacity 250ms cubic-bezier(.4,0,.2,1);
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .toast.visible {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        footer {
+            font-size: 0.72rem;
+            font-weight: 300;
+            color: var(--ink-faint);
+            margin-top: var(--space-xl);
+            text-align: center;
+            width: 100%;
+        }
+
+        /* ------------------------------------
+           4. Motion Guardrails (Section 6)
+           ------------------------------------ */
+        .is-switching {
+            opacity: 0;
+            transform: translateY(6px);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+            .is-switching {
+                opacity: 0 !important;
+                transform: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <svg style="display:none;">
+        <filter id="noise">
+            <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch"/>
+            <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.04 0"/>
+        </filter>
+    </svg>
+
+    <div class="wrapper">
+        <header>
+            <div class="brand">
+                <h1 class="logo">kata<span>Jal</span></h1>
+                <div class="tagline" id="brandTagline">kata-kata bermakna</div>
+            </div>
+            
+            <div class="lang-toggle" onclick="toggleLanguage()" aria-label="Switch Language">
+                <button class="lang-btn active" id="btnMs">BM</button>
+                <button class="lang-btn" id="btnEn">EN</button>
+            </div>
+        </header>
+
+        <main>
+            <div class="quote-card">
+                <span class="khat-watermark" aria-hidden="true">“</span>
+                <div class="quote-display-area" id="quoteArea">
+                    <p class="quote-text" id="quoteText">“Sabar itu subur, ikhlas itu luas.”</p>
+                    <div class="quote-author" id="quoteAuthor">— Anonim</div>
+                </div>
+            </div>
+        </main>
+
+        <div class="action-tray">
+            <button class="btn-secondary" id="copyBtn" onclick="copyToClipboard()" title="Salin Petikan">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                <span id="copyBtnLabel">Salin</span>
+            </button>
+            
+            <button class="btn-primary" id="nextBtn" onclick="generateRandomQuote()">
+                <span id="nextBtnLabel">Seterusnya</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            </button>
+        </div>
+    </div>
+
+    <div class="toast" id="toastNotice" role="alert">Petikan disalin ✓</div>
+
+    <footer>&copy; 2026 kataJal. Segala hak terpelihara.</footer>
+
+    <script>
+        // High-Quality Balanced Quote Repositories
+        const database = {
+            ms: {
+                tagline: "kata-kata bermakna",
+                nextLabel: "Seterusnya",
+                copyLabel: "Salin",
+                copiedLabel: "Disalin!",
+                toastLabel: "Petikan disalin ✓",
+                copyright: "&copy; 2026 kataJal. Segala hak terpelihara.",
+                quotes: [
+                    { text: "“Sabar itu subur, ikhlas itu luas.”", author: "Anonim" },
+                    { text: "“Masa depan adalah milik mereka yang percaya pada keindahan impian mereka.”", author: "Eleanor Roosevelt" },
+                    { text: "“Cara terbaik untuk meramal masa depan adalah dengan menciptanya.”", author: "Peter Drucker" },
+                    { text: "“Bahasa menunjukkan bangsa, sastera membina jiwa.”", author: "Pendeta Za'ba" },
+                    { text: "“Bukanlah lubuk yang dalam itu yang ditakuti, melainkan buaya yang tenang.”", author: "Peribahasa Melayu" }
+                ]
+            },
+            en: {
+                tagline: "meaningful words",
+                nextLabel: "Next Quote",
+                copyLabel: "Copy",
+                copiedLabel: "Copied!",
+                toastLabel: "Quote copied ✓",
+                copyright: "&copy; 2026 kataJal. All rights reserved.",
+                quotes: [
+                    { text: "“Patience is fertile, sincerity is boundlessly vast.”", author: "Anonymous" },
+                    { text: "“The future belongs to those who believe in the beauty of their dreams.”", author: "Eleanor Roosevelt" },
+                    { text: "“The best way to predict the future is to create it.”", author: "Peter Drucker" },
+                    { text: "“Language defines the nation, literature builds the soul.”", author: "Pendeta Za'ba" },
+                    { text: "“It is not the deep water that is feared, but the silent crocodile.”", author: "Malay Proverb" }
+                ]
+            }
+        };
+
+        let currentLanguage = 'ms';
+        let lastQuoteIndex = -1;
+        let toastTimeout = null;
+
+        // Core Language Switch Interface
+        function toggleLanguage() {
+            currentLanguage = (currentLanguage === 'ms') ? 'en' : 'ms';
+            
+            // Adjust Active Navigation Status Indicators
+            document.getElementById('btnMs').classList.toggle('active', currentLanguage === 'ms');
+            document.getElementById('btnEn').classList.toggle('active', currentLanguage === 'en');
+            
+            // Synchronize Fixed Copy Labels
+            document.getElementById('brandTagline').innerText = database[currentLanguage].tagline;
+            document.getElementById('nextBtnLabel').innerText = database[currentLanguage].nextLabel;
+            document.getElementById('copyBtnLabel').innerText = database[currentLanguage].copyLabel;
+            document.querySelector('footer').innerHTML = database[currentLanguage].copyright;
+
+            // Reset matching history matrix states for clean seeding
+            lastQuoteIndex = -1;
+            generateRandomQuote();
+        }
+
+        // Optimized Anti-Repetitive Randomizer Engine
+        function generateRandomQuote() {
+            const targetArea = document.getElementById('quoteArea');
+            const collection = database[currentLanguage].quotes;
+            
+            if (collection.length <= 1) return;
+
+            let nextIndex;
+            do {
+                nextIndex = Math.floor(Math.random() * collection.length);
+            } while (nextIndex === lastQuoteIndex);
+
+            lastQuoteIndex = nextIndex;
+            const targetQuote = collection[nextIndex];
+
+            // Trigger Section 6 Easing Motion Transforms
+            targetArea.classList.add('is-switching');
+
+            setTimeout(() => {
+                document.getElementById('quoteText').innerText = targetQuote.text;
+                document.getElementById('quoteAuthor').innerText = `— ${targetQuote.author}`;
+                targetArea.classList.remove('is-switching');
+                
+                // Clear active copy states gracefully if moving onward
+                resetCopyButtonState();
+            }, 150);
+        }
+
+        // Clipboard Copy & Toast Notification Engine
+        function copyToClipboard() {
+            const textToCopy = document.getElementById('quoteText').innerText;
+            const authorToCopy = document.getElementById('quoteAuthor').innerText;
+            const fullOutput = `${textToCopy} ${authorToCopy}`;
+
+            navigator.clipboard.writeText(fullOutput).then(() => {
+                triggerToastAlert();
+                triggerCopyButtonSuccess();
+            }).catch(err => {
+                console.error('Could not copy elements to target device: ', err);
+            });
+        }
+
+        function triggerToastAlert() {
+            const toast = document.getElementById('toastNotice');
+            toast.innerText = database[currentLanguage].toastLabel;
+            
+            clearTimeout(toastTimeout);
+            toast.classList.add('visible');
+
+            toastTimeout = setTimeout(() => {
+                toast.classList.remove('visible');
+            }, 2200); // 2200ms visible timeline limit
+        }
+
+        function triggerCopyButtonSuccess() {
+            const copyBtn = document.getElementById('copyBtn');
+            const copyLabel = document.getElementById('copyBtnLabel');
+            
+            copyBtn.classList.add('success-state');
+            copyLabel.innerText = database[currentLanguage].copiedLabel;
+        }
+
+        function resetCopyButtonState() {
+            const copyBtn = document.getElementById('copyBtn');
+            const copyLabel = document.getElementById('copyBtnLabel');
+            
+            copyBtn.classList.remove('success-state');
+            copyLabel.innerText = database[currentLanguage].copyLabel;
+        }
+
+        // Initialize First Application State Run Setup
+        window.addEventListener('DOMContentLoaded', () => {
+            generateRandomQuote();
+        });
+    </script>
+</body>
+</html>
